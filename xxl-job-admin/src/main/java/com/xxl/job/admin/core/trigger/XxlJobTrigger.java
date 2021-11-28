@@ -69,6 +69,7 @@ public class XxlJobTrigger {
         }
 
         // sharding param
+        // 处理分片参数
         int[] shardingParam = null;
         if (executorShardingParam!=null){
             String[] shardingArr = executorShardingParam.split("/");
@@ -78,6 +79,7 @@ public class XxlJobTrigger {
                 shardingParam[1] = Integer.valueOf(shardingArr[1]);
             }
         }
+        // 如果是广播任务，则触发每个执行器的任务
         if (ExecutorRouteStrategyEnum.SHARDING_BROADCAST==ExecutorRouteStrategyEnum.match(jobInfo.getExecutorRouteStrategy(), null)
                 && group.getRegistryList()!=null && !group.getRegistryList().isEmpty()
                 && shardingParam==null) {
@@ -85,6 +87,7 @@ public class XxlJobTrigger {
                 processTrigger(group, jobInfo, finalFailRetryCount, triggerType, i, group.getRegistryList().size());
             }
         } else {
+            // 如果是其他的路由策略
             if (shardingParam == null) {
                 shardingParam = new int[]{0, 1};
             }

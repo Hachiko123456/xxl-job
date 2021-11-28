@@ -29,13 +29,44 @@ public class XxlJobExecutor  {
     private static final Logger logger = LoggerFactory.getLogger(XxlJobExecutor.class);
 
     // ---------------------- param ----------------------
+    /**
+     * 调度中心地址
+     */
     private String adminAddresses;
+
+    /**
+     * 访问token
+     */
     private String accessToken;
+
+    /**
+     * 执行器应用名称
+     */
     private String appname;
+
+    /**
+     * 执行容器地址，默认为本机的ip+port
+     */
     private String address;
+
+    /**
+     * 执行容器ip
+     */
     private String ip;
+
+    /**
+     * 容器端口
+     */
     private int port;
+
+    /**
+     * 日志路径
+     */
     private String logPath;
+
+    /**
+     * 日志保留天数
+     */
     private int logRetentionDays;
 
     public void setAdminAddresses(String adminAddresses) {
@@ -68,19 +99,24 @@ public class XxlJobExecutor  {
     public void start() throws Exception {
 
         // init logpath
+        // 初始化日志路径
         XxlJobFileAppender.initLogPath(logPath);
 
         // init invoker, admin-client
+        // 初始化admin调度中心代理，通过配置的adminAddress，为每个调度中心生成一个AdminBiz代理类
         initAdminBizList(adminAddresses, accessToken);
 
 
         // init JobLogFileCleanThread
+        // 开启日志文件清理线程
         JobLogFileCleanThread.getInstance().start(logRetentionDays);
 
         // init TriggerCallbackThread
+        // 初始化触发回调线程
         TriggerCallbackThread.getInstance().start();
 
         // init executor-server
+        // 初始化执行器内置容器
         initEmbedServer(address, ip, port, appname, accessToken);
     }
     public void destroy(){
@@ -141,6 +177,7 @@ public class XxlJobExecutor  {
     private void initEmbedServer(String address, String ip, int port, String appname, String accessToken) throws Exception {
 
         // fill ip port
+        // 查找本机可用端口
         port = port>0?port: NetUtil.findAvailablePort(9999);
         ip = (ip!=null&&ip.trim().length()>0)?ip: IpUtil.getIp();
 
@@ -156,6 +193,7 @@ public class XxlJobExecutor  {
         }
 
         // start
+        // 创建执行器内置容器
         embedServer = new EmbedServer();
         embedServer.start(address, port, appname, accessToken);
     }

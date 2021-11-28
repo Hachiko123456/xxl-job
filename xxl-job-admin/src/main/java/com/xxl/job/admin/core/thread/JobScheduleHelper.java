@@ -29,7 +29,9 @@ public class JobScheduleHelper {
 
     public static final long PRE_READ_MS = 5000;    // pre read
 
+    // 调度线程
     private Thread scheduleThread;
+    // 时间轮线程
     private Thread ringThread;
     private volatile boolean scheduleThreadToStop = false;
     private volatile boolean ringThreadToStop = false;
@@ -87,7 +89,7 @@ public class JobScheduleHelper {
                             for (XxlJobInfo jobInfo: scheduleList) {
 
                                 // time-ring jump
-                                // 如果超过调度时间，且超了5秒的
+                                // 如果超过调度时间，且超了5秒的(这部分任务由于调度失败，没有可用线程执行，任务串行执行导致上一次调度失败，这种业务场景叫misfire)
                                 if (nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS) {
                                     // 2.1、trigger-expire > 5s：pass && make next-trigger-time
                                     logger.warn(">>>>>>>>>>> xxl-job, schedule misfire, jobId = " + jobInfo.getId());
@@ -106,7 +108,7 @@ public class JobScheduleHelper {
                                     refreshNextValidTime(jobInfo, new Date());
 
                                 }
-                                // 如果只是超过了调度时间，没有超过5s
+                                // 如果只是超过了调度时间，没有超过5s，立即调度
                                 else if (nowTime > jobInfo.getTriggerNextTime()) {
                                     // 2.2、trigger-expire < 5s：direct-trigger && make next-trigger-time
 
@@ -137,16 +139,19 @@ public class JobScheduleHelper {
 
                                     }
 
-                                } else {// 还没到任务的触发时间
+                                } else {// 还没到任务的触发时间，放入时间轮中
                                     // 2.3、trigger-pre-read：time-ring trigger && make next-trigger-time
 
                                     // 1、make ring second
+                                    // 计算任务对应的秒数
                                     int ringSecond = (int)((jobInfo.getTriggerNextTime()/1000)%60);
 
                                     // 2、push time ring
+                                    // 放入到时间轮中
                                     pushTimeRing(ringSecond, jobInfo.getId());
 
                                     // 3、fresh next
+                                    // 更新下一次任务的执行时间
                                     refreshNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
 
                                 }

@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.*;
 
 /**
+ *
  * Copy from : https://github.com/xuxueli/xxl-rpc
  *
  * @author xuxueli 2020-04-11 21:25
@@ -86,6 +87,7 @@ public class EmbedServer {
                     logger.info(">>>>>>>>>>> xxl-job remoting server start success, nettype = {}, port = {}", EmbedServer.class, port);
 
                     // start registry
+                    // 开启执行器注册线程
                     startRegistry(appname, address);
 
                     // wait util stop

@@ -7,6 +7,7 @@ import com.xxl.job.core.biz.model.ReturnT;
 import java.util.List;
 
 /**
+ * 执行器和调度中心交互类
  * @author xuxueli 2017-07-27 21:52:49
  */
 public interface AdminBiz {
@@ -15,6 +16,7 @@ public interface AdminBiz {
     // ---------------------- callback ----------------------
 
     /**
+     * 回调
      * callback
      *
      * @param callbackParamList
@@ -26,6 +28,7 @@ public interface AdminBiz {
     // ---------------------- registry ----------------------
 
     /**
+     * 注册
      * registry
      *
      * @param registryParam
@@ -34,6 +37,7 @@ public interface AdminBiz {
     public ReturnT<String> registry(RegistryParam registryParam);
 
     /**
+     * 移除注册
      * registry remove
      *
      * @param registryParam

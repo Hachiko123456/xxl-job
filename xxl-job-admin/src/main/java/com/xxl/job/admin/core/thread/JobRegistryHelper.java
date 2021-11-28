@@ -153,6 +153,11 @@ public class JobRegistryHelper {
 
 	// ---------------------- helper ----------------------
 
+	/**
+	 * 异步注册执行器
+	 * @param registryParam
+	 * @return com.xxl.job.core.biz.model.ReturnT<java.lang.String>
+	 **/
 	public ReturnT<String> registry(RegistryParam registryParam) {
 
 		// valid
@@ -166,6 +171,7 @@ public class JobRegistryHelper {
 		registryOrRemoveThreadPool.execute(new Runnable() {
 			@Override
 			public void run() {
+				// 将注册信息保存在xxl_job_registry表中
 				int ret = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registryUpdate(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
 				if (ret < 1) {
 					XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registrySave(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
@@ -179,6 +185,11 @@ public class JobRegistryHelper {
 		return ReturnT.SUCCESS;
 	}
 
+	/**
+	 * 异步移除执行器
+	 * @param registryParam
+	 * @return com.xxl.job.core.biz.model.ReturnT<java.lang.String>
+	 **/
 	public ReturnT<String> registryRemove(RegistryParam registryParam) {
 
 		// valid
