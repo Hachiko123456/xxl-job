@@ -3,6 +3,7 @@ package com.xxl.job.admin.core.model;
 import java.util.Date;
 
 /**
+ * 调度日志表： 用于保存XXL-JOB任务调度的历史信息，如调度结果、执行结果、调度入参、调度机器和执行器等等；
  * xxl-job log, used to track trigger process
  * @author xuxueli  2015-12-19 23:19:09
  */

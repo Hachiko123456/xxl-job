@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 任务调度失败处理器
  * job monitor instance
  *
  * @author xuxueli 2015-9-1 18:05:56
@@ -29,6 +30,9 @@ public class JobFailMonitorHelper {
 	private Thread monitorThread;
 	private volatile boolean toStop = false;
 	public void start(){
+		/**
+		 * 每10s轮询一次，处理调度失败的任务，如果配置了重试次数则先重试，然后再发告警邮件
+		 */
 		monitorThread = new Thread(new Runnable() {
 
 			@Override
@@ -43,6 +47,7 @@ public class JobFailMonitorHelper {
 							for (long failLogId: failLogIds) {
 
 								// lock log
+								// 通过sql的cas形式逐条锁定失败的日志记录进行处理
 								int lockRet = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().updateAlarmStatus(failLogId, 0, -1);
 								if (lockRet < 1) {
 									continue;
@@ -51,6 +56,7 @@ public class JobFailMonitorHelper {
 								XxlJobInfo info = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(log.getJobId());
 
 								// 1、fail retry monitor
+								// 如果配置重试的次数>0则先重试
 								if (log.getExecutorFailRetryCount() > 0) {
 									JobTriggerPoolHelper.trigger(log.getJobId(), TriggerTypeEnum.RETRY, (log.getExecutorFailRetryCount()-1), log.getExecutorShardingParam(), log.getExecutorParam(), null);
 									String retryMsg = "<br><br><span style=\"color:#F39C12;\" > >>>>>>>>>>>"+ I18nUtil.getString("jobconf_trigger_type_retry") +"<<<<<<<<<<< </span><br>";
@@ -59,6 +65,7 @@ public class JobFailMonitorHelper {
 								}
 
 								// 2、fail alarm monitor
+								// 发送邮件告警
 								int newAlarmStatus = 0;		// 告警状态：0-默认、-1=锁定状态、1-无需告警、2-告警成功、3-告警失败
 								if (info != null) {
 									boolean alarmResult = XxlJobAdminConfig.getAdminConfig().getJobAlarmer().alarm(info, log);
@@ -66,7 +73,7 @@ public class JobFailMonitorHelper {
 								} else {
 									newAlarmStatus = 1;
 								}
-
+								// 处理完毕后再通过sql的cas更新alarm_status
 								XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().updateAlarmStatus(failLogId, -1, newAlarmStatus);
 							}
 						}

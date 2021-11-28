@@ -3,6 +3,7 @@ package com.xxl.job.admin.core.model;
 import java.util.Date;
 
 /**
+ * 任务GLUE日志，用于保存GLUE更新历史，用于支持GLUE版本回溯功能
  * xxl-job log for glue, used to track job code process
  * @author xuxueli 2016-5-19 17:57:46
  */

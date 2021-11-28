@@ -10,6 +10,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * 定时任务触发器
  * job trigger thread pool helper
  *
  * @author xuxueli 2018-07-03 21:08:07
@@ -21,7 +22,9 @@ public class JobTriggerPoolHelper {
     // ---------------------- trigger pool ----------------------
 
     // fast/slow thread pool
+    // 快任务线程
     private ThreadPoolExecutor fastTriggerPool = null;
+    // 慢任务线程
     private ThreadPoolExecutor slowTriggerPool = null;
 
     public void start(){
@@ -77,8 +80,10 @@ public class JobTriggerPoolHelper {
                            final String addressList) {
 
         // choose thread pool
+        // 默认用快线程池执行任务
         ThreadPoolExecutor triggerPool_ = fastTriggerPool;
         AtomicInteger jobTimeoutCount = jobTimeoutCountMap.get(jobId);
+        // 如果1分钟内任务耗时超过500ms超过10次，则该窗口期内判定为慢任务
         if (jobTimeoutCount!=null && jobTimeoutCount.get() > 10) {      // job-timeout 10 times in 1 min
             triggerPool_ = slowTriggerPool;
         }
@@ -92,12 +97,14 @@ public class JobTriggerPoolHelper {
 
                 try {
                     // do trigger
+                    // 执行任务
                     XxlJobTrigger.trigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam, addressList);
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 } finally {
 
                     // check timeout-count-map
+                    // 整除是向下取整，如果minTime!=minTine_now则说明时间已经过了一分钟,否则就说明时间还在一分钟之内
                     long minTim_now = System.currentTimeMillis()/60000;
                     if (minTim != minTim_now) {
                         minTim = minTim_now;
@@ -106,6 +113,7 @@ public class JobTriggerPoolHelper {
 
                     // incr timeout-count-map
                     long cost = System.currentTimeMillis()-start;
+                    // 如果耗时大于500ms，则记录次数
                     if (cost > 500) {       // ob-timeout threshold 500ms
                         AtomicInteger timeoutCount = jobTimeoutCountMap.putIfAbsent(jobId, new AtomicInteger(1));
                         if (timeoutCount != null) {

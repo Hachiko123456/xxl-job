@@ -34,6 +34,8 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 
 		// static method
 		if (modelAndView != null) {
+			// 把I18nUtil对象返回到ftl页面上去
+			// 例如在common.macro.ftl页面中声明 <#global I18n = I18nUtil.getMultString()?eval />
 			modelAndView.addObject("I18nUtil", FtlUtil.generateStaticModel(I18nUtil.class.getName()));
 		}
 		

@@ -3,6 +3,7 @@ package com.xxl.job.admin.core.model;
 import java.util.Date;
 
 /**
+ * 执行器注册表，维护在线的执行器和调度中心机器地址信息
  * Created by xuxueli on 16/9/30.
  */
 public class XxlJobRegistry {

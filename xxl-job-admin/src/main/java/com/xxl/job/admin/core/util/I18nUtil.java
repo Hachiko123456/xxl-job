@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * 国际化util
  * i18n util
  *
  * @author xuxueli 2018-01-17 20:39:06
@@ -34,6 +35,7 @@ public class I18nUtil {
 
             // load prop
             Resource resource = new ClassPathResource(i18nFile);
+            // 使用spring的EncodedResource和PropertiesLoaderUtils实现国际化
             EncodedResource encodedResource = new EncodedResource(resource,"UTF-8");
             prop = PropertiesLoaderUtils.loadProperties(encodedResource);
         } catch (IOException e) {

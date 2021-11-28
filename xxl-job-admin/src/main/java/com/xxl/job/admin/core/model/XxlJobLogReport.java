@@ -2,6 +2,9 @@ package com.xxl.job.admin.core.model;
 
 import java.util.Date;
 
+/**
+ * 调度日志报表：用户存储XXL-JOB任务调度日志的报表，调度中心报表功能页面会用到
+ */
 public class XxlJobLogReport {
 
     private int id;

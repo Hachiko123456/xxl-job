@@ -3,6 +3,7 @@ package com.xxl.job.admin.core.model;
 import java.util.Date;
 
 /**
+ * 定时任务执行实体
  * xxl-job info
  *
  * @author xuxueli  2016-1-12 18:25:49

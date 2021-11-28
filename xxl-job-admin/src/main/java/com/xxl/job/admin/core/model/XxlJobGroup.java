@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 执行器信息实体
  * Created by xuxueli on 16/9/30.
  */
 public class XxlJobGroup {

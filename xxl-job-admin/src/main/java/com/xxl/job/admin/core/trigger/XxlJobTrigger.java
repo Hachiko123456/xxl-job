@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
+ * 定时任务触发器
  * xxl-job trigger
  * Created by xuxueli on 17/7/13.
  */
@@ -49,6 +50,7 @@ public class XxlJobTrigger {
                                String addressList) {
 
         // load data
+        // 根据jobId获取任务参数
         XxlJobInfo jobInfo = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(jobId);
         if (jobInfo == null) {
             logger.warn(">>>>>>>>>>>> trigger fail, jobId invalid，jobId={}", jobId);
@@ -199,6 +201,7 @@ public class XxlJobTrigger {
     }
 
     /**
+     * 调用业务服务器的执行器
      * run executor
      * @param triggerParam
      * @param address
@@ -207,6 +210,9 @@ public class XxlJobTrigger {
     public static ReturnT<String> runExecutor(TriggerParam triggerParam, String address){
         ReturnT<String> runResult = null;
         try {
+            /**
+             * {@link com.xxl.job.core.biz.client.ExecutorBizClient}
+             */
             ExecutorBiz executorBiz = XxlJobScheduler.getExecutorBiz(address);
             runResult = executorBiz.run(triggerParam);
         } catch (Exception e) {
