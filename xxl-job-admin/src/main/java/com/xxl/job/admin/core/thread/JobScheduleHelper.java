@@ -216,7 +216,7 @@ public class JobScheduleHelper {
 
 
                     // Wait seconds, align second
-                    // 如果执行得太快了，则休眠等待一下
+                    // 因为时间轮的时间刻度为1s，如果执行时间不够1s，则休眠够1s
                     if (cost < 1000) {  // scan-overtime, not wait
                         try {
                             // pre-read period: success > scan each second; fail > skip this period;
@@ -300,6 +300,12 @@ public class JobScheduleHelper {
         ringThread.start();
     }
 
+    /**
+     * 计算下一次执行时间
+     * @param jobInfo
+     * @param fromTime
+     * @return void
+     **/
     private void refreshNextValidTime(XxlJobInfo jobInfo, Date fromTime) throws Exception {
         Date nextValidTime = generateNextValidTime(jobInfo, fromTime);
         if (nextValidTime != null) {

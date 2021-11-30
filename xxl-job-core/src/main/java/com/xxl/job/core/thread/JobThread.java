@@ -98,6 +98,7 @@ public class JobThread extends Thread{
 
     	// init
     	try {
+    		// 1.先执行任务的init方法
 			handler.init();
 		} catch (Throwable e) {
     		logger.error(e.getMessage(), e);
@@ -132,6 +133,7 @@ public class JobThread extends Thread{
 					// execute
 					XxlJobHelper.log("<br>----------- xxl-job job execute start -----------<br>----------- Param:" + xxlJobContext.getJobParam());
 
+					// 2.如果任务设置了超时时间，则将任务交由FutureTask执行
 					if (triggerParam.getExecutorTimeout() > 0) {
 						// limit timeout
 						Thread futureThread = null;
@@ -162,6 +164,7 @@ public class JobThread extends Thread{
 							futureThread.interrupt();
 						}
 					} else {
+						// 3.没有设置超时时间，立即执行任务的execute方法
 						// just execute
 						handler.execute();
 					}
@@ -176,6 +179,7 @@ public class JobThread extends Thread{
 								:tempHandleMsg;
 						XxlJobContext.getXxlJobContext().setHandleMsg(tempHandleMsg);
 					}
+					// 4.记录结果日志
 					XxlJobHelper.log("<br>----------- xxl-job job execute end(finish) -----------<br>----------- Result: handleCode="
 							+ XxlJobContext.getXxlJobContext().getHandleCode()
 							+ ", handleMsg = "
@@ -242,6 +246,7 @@ public class JobThread extends Thread{
 
 		// destroy
 		try {
+			// 5.执行销毁方法
 			handler.destroy();
 		} catch (Throwable e) {
 			logger.error(e.getMessage(), e);

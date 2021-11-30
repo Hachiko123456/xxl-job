@@ -151,6 +151,9 @@ public class XxlJobExecutor  {
 
 
     // ---------------------- admin-client (rpc invoker) ----------------------
+    /**
+     * 识别调度中心地址，提供和调度中心通信biz类
+     */
     private static List<AdminBiz> adminBizList;
     private void initAdminBizList(String adminAddresses, String accessToken) throws Exception {
         if (adminAddresses!=null && adminAddresses.trim().length()>0) {
@@ -172,6 +175,9 @@ public class XxlJobExecutor  {
     }
 
     // ---------------------- executor-server (rpc provider) ----------------------
+    /**
+     * 创建执行器的内置容器
+     */
     private EmbedServer embedServer = null;
 
     private void initEmbedServer(String address, String ip, int port, String appname, String accessToken) throws Exception {
@@ -211,6 +217,7 @@ public class XxlJobExecutor  {
 
 
     // ---------------------- job handler repository ----------------------
+    // ----------------------------------job handler 注册api----------------------------------
     private static ConcurrentMap<String, IJobHandler> jobHandlerRepository = new ConcurrentHashMap<String, IJobHandler>();
     public static IJobHandler loadJobHandler(String name){
         return jobHandlerRepository.get(name);
@@ -272,6 +279,7 @@ public class XxlJobExecutor  {
         registJobHandler(name, new MethodJobHandler(bean, executeMethod, initMethod, destroyMethod));
 
     }
+    // ----------------------------------job handler 注册api----------------------------------
 
 
     // ---------------------- job thread repository ----------------------
